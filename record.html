@@ -1,0 +1,88 @@
+<html>
+  <head>
+      <script src="svg.js"></script>
+  </head>
+  <body>
+      <div id="drawing"></div>
+      
+      <script>
+        
+        function constant(x) {
+            return function (t) { return x; };
+        }
+        
+        function theta() {
+            return function (t) { return t; };
+        }
+        
+        function exp(b) {
+            return function(t) { return b ** t; };
+        }
+        
+        function plus(f,g) {
+            return function (t) { return f(t) + g(t); };
+        }
+        
+        function times(f,g) {
+            return function (t) { return f(t) * g(t); };
+        }
+        
+        function sin(f) {
+            return function (t) { return Math.sin(f(t)); };
+        }
+        
+        
+        
+        
+        
+        function circle(r) {
+            return function (t) { return r; };
+        }
+        
+        function spiral(a) {
+            return function (t) { return a * t; };
+        }
+        
+        function sineWave(freq) {
+            return function (t) { return Math.sin(freq*t); };
+        }
+        
+        function xyCoords(f, t) {
+            let r = f(t);
+            return [r*Math.cos(t), -r*Math.sin(t)];
+        }
+        
+        function render(f, theta_start, step, theta_end) {
+            let coords = [];
+            for (var t = theta_start; t <= theta_end; t += step) {
+                coords.push(xyCoords(f,t));
+            }
+            return coords;
+        }
+        
+        function stretchRPM(f,rpm) {
+            const cycles = rpm/60;
+            return function (t) {
+              return f(t/cycles);  
+            };
+        }
+        
+        let canvas = SVG('drawing').size('100%', '100%').viewbox(-500,-500,1000,1000);
+        
+        //let crossHairsH = canvas.polyline([[-100,0], [100,0]]);
+        //let crossHairsV = canvas.polyline([[0,-100],[0,100]]);
+        
+        //crossHairsH.fill('none').stroke({width:2, color: '#ccc'});
+        //crossHairsV.fill('none').stroke({width:2, color: '#ccc'});
+        
+        const freq = times(constant(10),plus(constant(0.5),times(constant(0.5),theta())));
+        
+        const slope = plus(theta(), constant(200));
+        
+        canvas.polyline(render(plus(slope,times(constant(2),sin(plus(freq,times(constant(50),theta()))))), 0*Math.PI, 0.0001, 5*Math.PI)).fill('none').stroke({width:1, color: '#ccc'});
+        
+        //canvas.polyline(render(plus(spiral(2), times(constant(10),stretchRPM(sin(times(times(theta(), constant(1/20)),theta())),33))), 50*Math.PI, 0.0001, 52*Math.PI)).fill('none').stroke({width:1, color: '#ccc'});
+        
+      </script>
+  </body>
+</html>
